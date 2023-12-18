@@ -14,3 +14,16 @@ userForm.loginFormCallback = (data) => {
     }
   });
 };
+
+userForm.registerFormCallback = (data) => {
+  console.log('data', data);
+
+  ApiConnector.register(data, (response) => {
+    console.log(response);
+    if (response.success) { 
+      location.reload();
+    } else {
+      alert(response.error);
+    }
+  });
+};

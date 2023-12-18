@@ -5,6 +5,8 @@ logoutButton.action = () => {
 	ApiConnector.logout(logout => {
 		if (logout.success) {
 			location.reload();
+		} else {
+			favoritesWidget.setMessage(false, 'Что-то пошло не так');
 		}
 	});
 }
@@ -12,17 +14,27 @@ logoutButton.action = () => {
 ApiConnector.current(response => {
 	if (response.success) {
 		ProfileWidget.showProfile(response.data);
+	} else {
+		favoritesWidget.setMessage(false, 'Что-то пошло не так');
 	}
 });
 
 const ratesBoard = new RatesBoard();
 
-setInterval(ApiConnector.getStocks(response => {
-	if (response.success) {
-		ratesBoard.clearTable();
-		ratesBoard.fillTable(response.data);
-	};
-}), 60000);
+function updateStocks() {
+	ApiConnector.getStocks(response => {
+			if (response.success) {
+					ratesBoard.clearTable();
+					ratesBoard.fillTable(response.data);
+			} else {
+				favoritesWidget.setMessage(false, 'Не удалось загрузить курсы валют');
+			}
+	});
+}
+
+updateStocks();
+
+setInterval(updateStocks, 60000);
 
 const moneyManager = new MoneyManager();
 
@@ -66,6 +78,8 @@ ApiConnector.getFavorites(response => {
 		favoritesWidget.clearTable();
 		favoritesWidget.fillTable(response.data);
 		moneyManager.updateUsersList(response.data);
+	} else {
+		favoritesWidget.setMessage(false, 'Что-то пошло не так');
 	}
 });
 
